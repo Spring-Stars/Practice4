@@ -2,3 +2,6 @@ ipykernel
 numpy
 pandas
 pyarrow
+matplotlib
+seaborn
+scikit-learn
