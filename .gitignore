@@ -171,4 +171,5 @@ cython_debug/
 .pypirc
 
 # Project
-1603053657497A.csv
+*.csv
+*.parquet
