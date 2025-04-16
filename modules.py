@@ -1,10 +1,7 @@
 from astroquery.vizier import Vizier
-import pandas as pd
 from tqdm import tqdm
 import os
-import pyarrow as pa
-import pyarrow.parquet as pq
-from typing import List, Optional
+from typing import List
 
 def download_catalogs(
     catalogs: List[str],
@@ -61,55 +58,13 @@ def download_catalogs(
             
     return saved_files
 
-def load_merged_data(
-    file_paths: List[str],
-    merge: bool = True
-) -> Optional[pd.DataFrame]:
-    """
-    Load cached Parquet files
-    
-    Args:
-        file_paths: List of Parquet file paths
-        merge: Combine into single DataFrame
-        
-    Returns:
-        Merged DataFrame or list of DataFrames
-    """
-    data = []
-    for path in file_paths:
-        if not os.path.exists(path):
-            print(f"Missing file: {path}")
-            continue
-        try:
-            df = pd.read_parquet(path)
-            data.append(df)
-        except Exception as e:
-            print(f"Error reading {path}: {str(e)}")
-    
-    if not data:
-        return None
-    
-    return pd.concat(data, ignore_index=True) if merge else data
 
 # Example Usage
 if __name__ == "__main__":
     # See more catalogues at https://vizier.cds.unistra.fr/
     catalogs = [
-        "I/122",    # Hipparcos Input Catalog
-        "I/16",     # SAO Catalog
-        "I/161",    # HIC (Hipparcos Input Catalog)
-        "I/242",    # 2MASS All-Sky Catalog
-        "I/261",    # Tycho-2 Catalog
-        "I/306A"    # USNO-B1.0 Catalog
+        "B/vsx/vsx",
     ]
     
     # Download only missing catalogs
     parquet_files = download_catalogs(catalogs)
-    
-    # Load and merge data
-    merged_df = load_merged_data(parquet_files)
-    
-    if merged_df is not None:
-        print(f"Merged data shape: {merged_df.shape}")
-        merged_df.to_csv("data/merged_catalogs.csv")
-        print("Saved merged dataset")
