@@ -173,3 +173,4 @@ cython_debug/
 # Project
 *.csv
 *.parquet
+.vscode/
