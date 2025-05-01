@@ -2,6 +2,11 @@ from astroquery.vizier import Vizier
 from tqdm import tqdm
 import os
 from typing import List
+import requests
+from bs4 import BeautifulSoup
+from urllib.parse import urljoin
+import pandas as pd
+
 
 def download_catalogs(
     catalogs: List[str],
@@ -59,6 +64,84 @@ def download_catalogs(
     return saved_files
 
 
+def download_gaia_vari_short_timescale(
+    save_dir: str = "vari_short_timescale_files",
+)-> str:
+
+    # URL of the directory to scrape (replace with the actual URL of the directory)
+    base_url = "https://cdn.gea.esac.esa.int/Gaia/gdr3/Variability/vari_short_timescale/"
+
+    # Directory where you want to save the files
+    download_dir = f"./data/{save_dir}"
+
+    # Create download directory if it doesn't exist
+    os.makedirs(download_dir, exist_ok=True)
+
+    # Send a GET request to the directory page
+    response = requests.get(base_url)
+    response.raise_for_status()  # Check if the request was successful
+
+    # Parse the directory listing page
+    soup = BeautifulSoup(response.text, "html.parser")
+
+    # Extract all links (file names)
+    file_links = soup.find_all("a")
+
+    # Filter out directories and non-GZ files
+    files_to_download = [urljoin(base_url, link.get("href")) for link in file_links if link.get("href").endswith(".csv.gz")]
+
+    # Download the files
+    for file_url in tqdm(files_to_download, desc="Downloading data"):
+        file_name = os.path.join(download_dir, file_url.split("/")[-1])
+        
+        # Check if the file already exists
+        if os.path.exists(file_name):
+            continue
+        
+        with requests.get(file_url, stream=True) as r:
+            r.raise_for_status()  # Check if the request was successful
+            with open(file_name, 'wb') as f:
+                for chunk in r.iter_content(chunk_size=8192):
+                    f.write(chunk)
+
+    print(f"Download complete. Saved at {download_dir}")
+
+    return download_dir
+
+
+def merge_gaia_vari_short_timescale(
+    directory_path: str = './data/vari_short_timescale_files',
+    save_name: str = "vari_short_timescale_files",
+) -> str:
+    # Check if the file already exists
+    if os.path.exists(f"./data/{save_name}.parquet"):
+        print(f"File {save_name}.parquet already exist")
+        return f"./data/{save_name}.parquet"
+
+    # List all files in the directory
+    file_list = [f for f in os.listdir(directory_path) if f.endswith('.csv.gz')]
+
+    # Initialize an empty list to store dataframes
+    df_list = []
+
+    # Load each file and append to the list
+    for file in tqdm(file_list, desc="Processing data"):
+        file_path = os.path.join(directory_path, file)
+        df = pd.read_csv(file_path, comment='#')  # Load the file, skipping metadata
+        df_list.append(df)
+
+    # Merge all dataframes into one
+    merged_data = pd.concat(df_list, ignore_index=True)
+
+    merged_data.to_parquet(
+                f"./data/{save_name}.parquet",
+                engine='pyarrow',
+                compression='snappy'
+            )
+    
+    return f"./data/{save_name}.parquet"
+
+
 # Example Usage
 if __name__ == "__main__":
     # See more catalogues at https://vizier.cds.unistra.fr/
@@ -68,3 +151,5 @@ if __name__ == "__main__":
     
     # Download only missing catalogs
     parquet_files = download_catalogs(catalogs)
+
+    download_gaia_vari_short_timescale()

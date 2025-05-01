@@ -174,3 +174,4 @@ cython_debug/
 *.csv
 *.parquet
 .vscode/
+data/vari_short_timescale_files/*
