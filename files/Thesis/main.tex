@@ -1,0 +1,63 @@
+\documentclass[oneside, a5paper,10pt]{article}
+\usepackage{System/core}
+
+\input{System/newcommand}
+
+\begin{document}
+
+\addAuthor{Иванов Иван Иванович}{НИЯУ МИФИ}{ivanov@mephi.ru}
+\addAuthor{Петров Петр Петрович}{НИЦ Курчатовский институт}{}
+
+\makeInf
+{Название работы}
+{Необходимо привести краткую аннотацию. Здесь в двух-трех
+предложениях излагается суть исследования, существенные
+факты работы и ее результаты.}
+{Ключевые слова: привести не более четырех ключевых слов.}
+{Для формул следует использовать окружение equation с меткой. Всякую метку следует начинать с Вашей фамилии и инициалов, то есть она должна выглядеть следующим образом: \textbackslash label\{IvanovII-series\}. Например, 
+\begin{equation}
+\label{eqn:IvanovII-series} % 
+\Gamma_{jk}^i = \frac{1}{2}g^{i\alpha}
+\left(
+\frac{\p g_{k\alpha}}{\p x^j}+
+\frac{\p g_{j\alpha}}{\p x^k}-
+\frac{\p g_{jk}}{\p x^\alpha}
+\right).
+\end{equation}
+
+Формулы средствами \LaTeX~ нумеруются автоматически. Помимо стандартного \texttt{ref} для ссылки на формулы определен макрос \texttt{eqref}. Например, $\backslash$eqref$\{$eqn:IvanovII-series$\}$ даст \eqref{eqn:IvanovII-series}.
+
+Ссылаться на формулы следует следующим образом:<<...подставив в (1) значение интерполяции, получим (2)>>.
+
+Иллюстрации располагаются по центру, требуют подпись и масштабный коэфициент.
+\Picture{IvanovII-plot1}{Поверхностный потенциал НЧ FeAu до и после покрытия карбоксиметилдекстраном.}{0.6}%Формат изображения .jpg, .png или .tiff., расширение не указывается
+
+\begin{table}[h!]
+	\caption{Пример таблицы}
+	\centering
+	\begin{tabular}{ | l | l | l | }
+		\hline
+		Столбец 1 & Столбец 2 & Столбец 3 \\
+		\hline
+		Значение & Значение & Значение\\
+		\hline
+		Значение & Значение & Значение \\
+		\hline
+	\end{tabular}
+	\label{table:IvanovII-table1}
+\end{table}
+
+Ссылка на рисунок \ref{IvanovII-plot1} или на таблицу \ref{table:IvanovII-table1} оформляется без скобок, метка рисунка соответствует имени файла.
+
+Ссылки на источники желательно оформлять через \texttt{cite}, но также допускается работать с источниками вручную, ссылаться как [1]. Обращаем внимание, что как минимум один из источников должен быть за последние пять лет.
+
+\begin{thebibliography}{9}
+	%Согласно ГОСТ Р 7.0.100-2018.
+	\bibitem{bibl:IvanovII-vibro}\textit{Бойко В.В., Лапкис А.А.} Построение эталонных виброакустических портретов операций перегрузки
+	ядерного топлива [Конференция] // СОТБ: материалы VI Всероссийской конференции и школы для молодых ученых
+	– Ростов-на-Дону; - Таганрог: издательство Южного федерального университета, 2019. – стр. 213. 
+	\bibitem{bibl:IvanovII-hypmat}\textit{Drachev V.P., Podolskiy V.A., Kildishev A.V.} Hyperbolic metamaterials: new physics behind
+	a classical problem [Journal]// Optics Express. V. 21(12). - 2019. - p. 15048.
+\end{thebibliography}
+}
+\end{document}

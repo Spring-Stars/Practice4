@@ -1,0 +1,144 @@
+\newcommand*\rfrac[2]{{}^{#1}\!/_{#2}}
+\renewcommand{\proofname}{Доказательство}
+
+\newcounter{num_authors}
+\setcounter{num_authors}{0}
+
+\newarray\authorName
+\newarray\authorOrganisation
+\newarray\authorMail
+
+%%\isequal{что сравнить}{с чем сравнить}{если да}{если нет}
+%%делает проверку, одинаковы ли макросы "что сравнить" и "с чем сравнить". Если одинаковы - выполняет "если ла", в противном случае - "если нет"
+%Команда бесполезна.
+\newcommand{\isequalmacros}[4]{
+\def\a{#1}\def\b{#2}\ifx\a\b#3\else#4\fi
+}
+
+\def\ifEqStringBase#1#2%
+{\def\csa{#1}\def\csb{#2}\ifx\csa\csb}
+
+%\ifEqString{СТРОКА1}{СТОКА2}{УС_ДА}{УС_НЕТ}
+%сравнивает строки СТРОКА1 и СТРОКА 2. Если равны, то выполняет УС_ДА, если нет -- УС_НЕТ.
+\newcommand{\ifEqString}[4]{\ignorespaces
+\ifEqStringBase{#1}{#2}#3\else#4\fi
+}
+
+
+%%\addAuthor{ФИО}{организация}{e-mail}
+%%Добавляет автора
+%%Нумерация массива - С ЕДИНИЦЫ!!
+\newcommand{\addAuthor}[3]{
+\addtocounter{num_authors}{1}
+\authorName(\arabic{num_authors})={#1}
+\authorOrganisation(\arabic{num_authors})={#2}
+\authorMail(\arabic{num_authors})={#3}
+}
+
+%\roflll{\x}
+\newcommand{\roflll}[1]{
+\ignorespaces
+\checkauthorMail(#1)\def\mystring{\cachedata}\StrLen{\mystring}[\mystringlenn]\ifnum\mystringlenn>0\checkauthorName(#1)\cachedata$^{*\text{#1}}$\else\checkauthorName(#1)\cachedata$^{\text{#1}}$\fi}
+
+\newcommand{\makeAuthorList}{
+\ignorespaces
+\begin{center}
+\ifthenelse{\arabic{num_authors} = 0}{}{
+\foreach\x in{1,...,\arabic{num_authors}}{
+\roflll{\x}\ifnum\x<\arabic{num_authors}{,}\fi}
+}
+\end{center}
+\vspace{-7mm}
+\begin{center}
+\foreach\x in{1,...,\arabic{num_authors}}{
+\textit{$^{\text{\x}}$\checkauthorOrganisation(\x)\cachedata}\ifnum\x<\arabic{num_authors}{,}\fi\\
+}
+\end{center}
+\vspace{-5mm}
+\begin{center}
+\foreach\x in{1,...,\arabic{num_authors}}{
+\checkauthorMail(\x)\def\mystring{\cachedata}\StrLen{\mystring}[\mystringlenn]\ifnum\mystringlenn>0$^{\text{*}}$e-mail:\,\textit{\cachedata}\fi
+}
+\end{center}
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\chead{
+II Весенняя научная сессия СНО НИЯУ МИФИ -- 2024
+}
+\cfoot{\thepage}
+
+%%\makeInf{название}{тект аннотации}{Ключевые слова}{Тезисы}
+\newcommand{\makeInf}[4]{
+\renewcommand{\abstractname}{\normalsize Аннотация}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{center}
+\bfseries\large{#1}
+\end{center}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\vspace{-5mm}
+\makeAuthorList
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{abstract}
+\begin{minipage}{84mm}
+\par
+#2
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\vspace{8mm}
+\par
+#3
+\end{minipage}
+\end{abstract}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\vspace{6mm}
+\par
+#4
+}
+
+\newcommand{\Picture}[3]{%
+\begin{figure}[H]
+\centering
+  \includegraphics[keepaspectratio, width=#3\textwidth]{Pictures/#1}
+\caption{#2}\label{#1}
+\end{figure}
+}
+
+\makeatletter
+\renewenvironment{thebibliography}[1]
+{ %\refname
+	\smallskip
+	\nopagebreak
+	\centerline{\\ \textbf{\refname}}
+	\nopagebreak
+	\smallskip
+	\@afterheading
+	
+	%\@mkboth{\MakeUppercase\refname}{\MakeUppercase\refname}%
+	\list{
+		\@biblabel{\@arabic\c@enumiv}
+	}%
+	{
+		\settowidth\labelwidth{\@biblabel{#1}}%
+		\leftmargin\labelwidth
+		\advance\leftmargin\labelsep
+		\@openbib@code
+		\usecounter{enumiv}%
+		\let\p@enumiv\@empty
+		\renewcommand\theenumiv{\@arabic\c@enumiv}}%
+	\sloppy
+	\clubpenalty4000
+	\@clubpenalty \clubpenalty
+	\widowpenalty4000%
+	\sfcode`\.\@m}
+{\def\@noitemerr
+	{\@latex@warning{Empty `thebibliography' environment}}%
+	\endlist}
+\makeatother
+
+\makeatletter
+\renewcommand\@biblabel[1]{#1.}
+\makeatother
+
+\newcommand{\p}{\partial}
