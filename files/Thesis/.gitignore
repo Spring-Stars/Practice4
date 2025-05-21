@@ -39,6 +39,7 @@
 *.thm
 *.toc
 *.vrb
+*.xdv
 *.xdy
 *.xml
 *blx.bib
